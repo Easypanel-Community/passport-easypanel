@@ -1,0 +1,75 @@
+{
+  "name": "passport-easypanel",
+  "version": "1.0.0",
+  "description": "Passport authentication strategy for Easypanel",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run build:clean && npm run build:esm && npm run build:cjs && npm run build:types",
+    "build:clean": "rimraf dist",
+    "build:esm": "cross-env BABEL_ENV=esm node scripts/build-esm.js",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir dist/cjs --plugins=@babel/plugin-transform-modules-commonjs",
+    "build:types": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "cross-env NODE_ENV=test jest",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/easypanel-community/passport-easypanel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/easypanel-community/passport-easypanel/issues"
+  },
+  "homepage": "https://github.com/easypanel-community/passport-easypanel#readme",
+  "keywords": [
+    "passport",
+    "easypanel",
+    "auth",
+    "authentication",
+    "identity"
+  ],
+  "author": {
+    "name": "Owen Bonneville ( Supernova3339 )",
+    "email": "supernova@superdev.one",
+    "url": "https://superdev.one"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "passport-http-bearer": "^1.0.1",
+    "passport-strategy": "^1.0.0"
+  },
+  "peerDependencies": {
+    "passport": "^0.6.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "mkdirp": "^3.0.1",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2"
+  }
+}

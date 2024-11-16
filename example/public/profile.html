@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/blueimp-md5/js/md5.min.js"></script>
+</head>
+<body>
+<div class="profile-container">
+    <h1>Welcome to Your Profile</h1>
+    <button id="logout-button" class="logout-button">Logout</button>
+    <div class="profile-card">
+        <img src="https://via.placeholder.com/150" alt="Profile Picture" id="profile-pic">
+        <h2 id="user-name">Loading...</h2>
+        <p id="user-email">Email: loading...</p>
+        <p id="user-joined">Joined: loading...</p>
+    </div>
+</div>
+<script>
+    // Helper: Generate Gravatar URL
+    function getGravatarUrl(email) {
+        const hash = md5(email.trim().toLowerCase());
+        return `https://www.gravatar.com/avatar/${hash}?s=150&d=identicon`;
+    }
+
+    // Helper: Format ISO date into a human-readable format
+    function formatDate(isoDate) {
+        if (!isoDate) return 'Unknown';
+        const date = new Date(isoDate);
+        return new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        }).format(date);
+    }
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem('token'); // Clear the stored token
+        window.location.href = '/index.html'; // Redirect to login page
+    }
+
+    // Add logout event listener
+    document.getElementById('logout-button').addEventListener('click', logout);
+
+    // Fetch user profile information from the server
+    fetch('/profile', {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load profile');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const email = data.user.email || 'N/A';
+            const username = email.split('@')[0];
+            const gravatarUrl = getGravatarUrl(email);
+
+            document.getElementById('profile-pic').src = gravatarUrl;
+            document.getElementById('user-name').innerText = username.charAt(0).toUpperCase() + username.slice(1);
+            document.getElementById('user-email').innerText = `Email: ${email}`;
+            document.getElementById('user-joined').innerText = `Joined: ${formatDate(data.user.createdAt)}`;
+        })
+        .catch(error => {
+            document.querySelector('.profile-container').innerHTML = `<p style="color: red;">Error loading profile: ${error.message}</p>`;
+        });
+</script>
+</body>
+</html>
